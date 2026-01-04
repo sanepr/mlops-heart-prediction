@@ -11,6 +11,10 @@ spec:
     matchLabels:
       app: heart-disease-api
   template:
+    metadata:
+      labels:
+        app: heart-disease-api
+        version: v1
     spec:
       containers:
       - name: heart-disease-api
@@ -20,6 +24,26 @@ spec:
         - containerPort: 8000
           name: http
           protocol: TCP
+        env:
+        - name: PORT
+          value: "8000"
+        - name: MODEL_PATH
+          value: "/app/models/best_model.pkl"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
         readinessProbe:
           httpGet:
             path: /health
