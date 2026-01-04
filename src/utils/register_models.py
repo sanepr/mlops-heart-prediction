@@ -83,24 +83,6 @@ def register_models():
             # Register model
             model_uri = f"runs:/{run_id}/model"
 
-            # Check if model already registered
-            try:
-                existing_model = client.get_registered_model(model_name)
-                print(f"  ℹ️  Model '{model_name}' already exists, creating new version")
-            except:
-                print(f"  ➕ Creating new model '{model_name}'")
-
-            # Register the model
-            model_version = mlflow.register_model(
-                model_uri=model_uri,
-                name=model_name,
-                tags={
-                    "model_type": model_type,
-                    "test_roc_auc": str(roc_auc),
-                    "run_id": run_id
-                }
-            )
-
             print(f"  ✓ Registered as version {model_version.version}")
             print(f"    ROC-AUC: {roc_auc:.4f}")
 
