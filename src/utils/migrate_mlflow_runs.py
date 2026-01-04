@@ -70,6 +70,9 @@ class MLflowRunsMigrator:
         except Exception:
             pass
 
+        # Create new experiment
+        experiment_id = self.target_client.create_experiment(experiment_name)
+        print(f"  Created experiment '{experiment_name}' (ID: {experiment_id})")
         return experiment_id
 
     def copy_run(self, source_run, target_experiment_id: str, copy_artifacts: bool = True) -> str:
@@ -97,6 +100,12 @@ class MLflowRunsMigrator:
             # Copy metrics
             for key, value in source_run.data.metrics.items():
                 mlflow.log_metric(key, value)
+
+            # Copy tags
+            for key, value in source_run.data.tags.items():
+                # Skip system tags
+                if not key.startswith('mlflow.'):
+                    mlflow.set_tag(key, value)
 
             # Add migration metadata
             mlflow.set_tag("mlflow.migration.source_run_id", source_run.info.run_id)
